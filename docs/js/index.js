@@ -6,6 +6,7 @@ let beautify      = require('js-beautify').js
 let localTemplate = localStorage.getItem('template');
 let localCss      = localStorage.getItem('css');
 let localJs       = localStorage.getItem('js');
+let jsonFormat = require('json-format');
 
 import CodeMirror from 'codemirror';
 import Layout     from '../../index'
@@ -68,9 +69,11 @@ function run() {
         `/**\n * xml经过doT.js编译出的模板函数\n * 因为小游戏不支持new Function，模板函数只能外部编译\n * 可直接拷贝本函数到小游戏中使用\n */\n`;
         let be = beautify(String(doT.template(window.xml.getValue())), { indent_size: 4, space_in_empty_paren: true })
 
-        window.dot.setValue(
+        /*window.dot.setValue(
             comment + be
-        );
+        );*/
+
+        window.dot.setValue( jsonFormat(Layout.getJson(Layout.layoutTree)))
 
         console.log(Layout);
     } catch(e) {
@@ -85,7 +88,7 @@ document.getElementById('run').onclick = function() {
     run();
 };
 
-document.getElementById('reset').onclick = function() {
+/*document.getElementById('reset').onclick = function() {
     window.xml.setValue(template);
     window.style.setValue(css);
     window.js.setValue(js);
@@ -93,7 +96,7 @@ document.getElementById('reset').onclick = function() {
     setTimeout(() => {
         run();
     }, 0);
-};
+};*/
 
 let items = document.getElementsByClassName('panels__item');
 let panels = [].slice.call(document.getElementsByClassName('code'));

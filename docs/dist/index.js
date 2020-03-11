@@ -93,11 +93,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _template_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(1);
 /* harmony import */ var _style_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(2);
 /* harmony import */ var _js_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(3);
-/* harmony import */ var codemirror__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(8);
+/* harmony import */ var codemirror__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(9);
 /* harmony import */ var codemirror__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(codemirror__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(9);
+/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(10);
 /* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_index__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var dot__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(10);
+/* harmony import */ var dot__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(11);
 /* harmony import */ var dot__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(dot__WEBPACK_IMPORTED_MODULE_5__);
 
 
@@ -109,13 +109,14 @@ var localTemplate = localStorage.getItem('template');
 var localCss = localStorage.getItem('css');
 var localJs = localStorage.getItem('js');
 
+var jsonFormat = __webpack_require__(8);
+
+
 
 
 window.doT = dot__WEBPACK_IMPORTED_MODULE_5___default.a;
 window.CodeMirror = codemirror__WEBPACK_IMPORTED_MODULE_3___default.a;
 window.Layout = _index__WEBPACK_IMPORTED_MODULE_4___default.a;
-
-__webpack_require__(11);
 
 __webpack_require__(12);
 
@@ -130,6 +131,8 @@ __webpack_require__(16);
 __webpack_require__(17);
 
 __webpack_require__(18);
+
+__webpack_require__(19);
 
 window.xml = codemirror__WEBPACK_IMPORTED_MODULE_3___default()(document.getElementById("xml"), {
   value: localTemplate || _template_js__WEBPACK_IMPORTED_MODULE_0__["default"],
@@ -183,7 +186,11 @@ function run() {
       indent_size: 4,
       space_in_empty_paren: true
     });
-    window.dot.setValue(comment + be);
+    /*window.dot.setValue(
+        comment + be
+    );*/
+
+    window.dot.setValue(jsonFormat(_index__WEBPACK_IMPORTED_MODULE_4___default.a.getJson(_index__WEBPACK_IMPORTED_MODULE_4___default.a.layoutTree)));
     console.log(_index__WEBPACK_IMPORTED_MODULE_4___default.a);
   } catch (e) {
     console.log(e);
@@ -196,15 +203,16 @@ run();
 document.getElementById('run').onclick = function () {
   run();
 };
+/*document.getElementById('reset').onclick = function() {
+    window.xml.setValue(template);
+    window.style.setValue(css);
+    window.js.setValue(js);
 
-document.getElementById('reset').onclick = function () {
-  window.xml.setValue(_template_js__WEBPACK_IMPORTED_MODULE_0__["default"]);
-  window.style.setValue(_style_js__WEBPACK_IMPORTED_MODULE_1__["default"]);
-  window.js.setValue(_js_js__WEBPACK_IMPORTED_MODULE_2__["default"]);
-  setTimeout(function () {
-    run();
-  }, 0);
-};
+    setTimeout(() => {
+        run();
+    }, 0);
+};*/
+
 
 var items = document.getElementsByClassName('panels__item');
 var panels = [].slice.call(document.getElementsByClassName('code'));
@@ -9169,6 +9177,90 @@ if (true) {
 
 /***/ }),
 /* 8 */
+/***/ (function(module, exports) {
+
+/*
+  change for npm modules.
+  by Luiz Estácio.
+
+  json-format v.1.1
+  http://github.com/phoboslab/json-format
+
+  Released under MIT license:
+  http://www.opensource.org/licenses/mit-license.php
+*/
+var p = [],
+  indentConfig = {
+    tab: { char: '\t', size: 1 },
+    space: { char: ' ', size: 4 }
+  },
+  configDefault = {
+    type: 'tab'
+  },
+  push = function( m ) { return '\\' + p.push( m ) + '\\'; },
+  pop = function( m, i ) { return p[i-1] },
+  tabs = function( count, indentType) { return new Array( count + 1 ).join( indentType ); };
+
+function JSONFormat ( json, indentType ) {
+  p = [];
+  var out = "",
+      indent = 0;
+
+  // Extract backslashes and strings
+  json = json
+    .replace( /\\./g, push )
+    .replace( /(".*?"|'.*?')/g, push )
+    .replace( /\s+/, '' );    
+
+  // Indent and insert newlines
+  for( var i = 0; i < json.length; i++ ) {
+    var c = json.charAt(i);
+
+    switch(c) {
+      case '{':
+      case '[':
+        out += c + "\n" + tabs(++indent, indentType);
+        break;
+      case '}':
+      case ']':
+        out += "\n" + tabs(--indent, indentType) + c;
+        break;
+      case ',':
+        out += ",\n" + tabs(indent, indentType);
+        break;
+      case ':':
+        out += ": ";
+        break;
+      default:
+        out += c;
+        break;      
+    }         
+  }
+
+  // Strip whitespace from numeric arrays and put backslashes 
+  // and strings back in
+  out = out
+    .replace( /\[[\d,\s]+?\]/g, function(m){ return m.replace(/\s/g,''); } )
+    .replace( /\\(\d+)\\/g, pop ) // strings
+    .replace( /\\(\d+)\\/g, pop ); // backslashes in strings
+
+  return out;
+};
+
+module.exports = function(json, config){
+  config = config || configDefault;
+  var indent = indentConfig[config.type];
+
+  if ( indent == null ) {
+    throw new Error('Unrecognized indent type: "' + config.type + '"');
+  }
+  var indentType = new Array((config.size || indent.size) + 1).join(indent.char);
+  return JSONFormat(JSON.stringify(json), indentType);
+}
+
+
+/***/ }),
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -18956,7 +19048,7 @@ if (true) {
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _typeof2(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof2 = function _typeof2(obj) { return typeof obj; }; } else { _typeof2 = function _typeof2(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof2(obj); }
@@ -19634,6 +19726,7 @@ function (module, __webpack_exports__, __webpack_require__) {
         var jsonObj = _libs_fast_xml_parser_parser_js__WEBPACK_IMPORTED_MODULE_5___default.a.parse(template, parseConfig, true);
 
         var xmlTree = jsonObj.children[0];
+        console.log(111, JSON.stringify(xmlTree));
         this.debugInfo.xmlTree = new Date() - start; // XML树生成渲染树
 
         this.layoutTree = create.call(this, xmlTree, style);
@@ -24168,7 +24261,7 @@ function (module, __webpack_exports__, __webpack_require__) {
 ]);
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;// doT.js
@@ -24317,7 +24410,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;// doT.js
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -24325,7 +24418,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;// doT.js
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(8));
+    mod(__webpack_require__(9));
   else {}
 })(function(CodeMirror) {
   "use strict";
@@ -24780,7 +24873,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;// doT.js
 
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -24788,7 +24881,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;// doT.js
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(8));
+    mod(__webpack_require__(9));
   else {}
 })(function(CodeMirror) {
   "use strict";
@@ -24967,7 +25060,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;// doT.js
 
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -24975,7 +25068,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;// doT.js
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(8), __webpack_require__(12));
+    mod(__webpack_require__(9), __webpack_require__(13));
   else {}
 })(function(CodeMirror) {
   "use strict";
@@ -25036,7 +25129,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;// doT.js
 
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -25044,7 +25137,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;// doT.js
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(8));
+    mod(__webpack_require__(9));
   else {}
 })(function(CodeMirror) {
 "use strict";
@@ -25452,7 +25545,7 @@ if (!CodeMirror.mimeModes.hasOwnProperty("text/html"))
 
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -25460,7 +25553,7 @@ if (!CodeMirror.mimeModes.hasOwnProperty("text/html"))
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(8));
+    mod(__webpack_require__(9));
   else {}
 })(function(CodeMirror) {
   var ie_lt8 = /MSIE \d/.test(navigator.userAgent) &&
@@ -25605,7 +25698,7 @@ if (!CodeMirror.mimeModes.hasOwnProperty("text/html"))
 
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -25613,7 +25706,7 @@ if (!CodeMirror.mimeModes.hasOwnProperty("text/html"))
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(8));
+    mod(__webpack_require__(9));
   else {}
 })(function(CodeMirror) {
   var nonspace = /\S/g;
@@ -25721,7 +25814,7 @@ if (!CodeMirror.mimeModes.hasOwnProperty("text/html"))
 
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -25729,7 +25822,7 @@ if (!CodeMirror.mimeModes.hasOwnProperty("text/html"))
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(8));
+    mod(__webpack_require__(9));
   else {}
 })(function(CodeMirror) {
   "use strict";
@@ -25933,7 +26026,7 @@ if (!CodeMirror.mimeModes.hasOwnProperty("text/html"))
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
@@ -25941,7 +26034,7 @@ if (!CodeMirror.mimeModes.hasOwnProperty("text/html"))
 
 (function(mod) {
   if (true) // CommonJS
-    mod(__webpack_require__(8));
+    mod(__webpack_require__(9));
   else {}
 })(function(CodeMirror) {
 "use strict";

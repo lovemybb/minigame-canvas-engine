@@ -401,6 +401,7 @@ function (_Element) {
 
       var jsonObj = _libs_fast_xml_parser_parser_js__WEBPACK_IMPORTED_MODULE_5___default.a.parse(template, parseConfig, true);
       var xmlTree = jsonObj.children[0];
+      console.log(111, JSON.stringify(xmlTree));
       this.debugInfo.xmlTree = new Date() - start; // XML树生成渲染树
 
       this.layoutTree = create.call(this, xmlTree, style);

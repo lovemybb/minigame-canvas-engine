@@ -281,6 +281,8 @@ class _Layout extends Element {
 
         let xmlTree = jsonObj.children[0];
 
+        console.log(111, JSON.stringify(xmlTree));
+
         this.debugInfo.xmlTree = new Date() - start;
 
         // XML树生成渲染树
