@@ -3410,6 +3410,11 @@ var ImageManager = /*#__PURE__*/function () {
       return imgPool.get(src);
     }
   }, {
+    key: "clear",
+    value: function clear() {
+      imgPool.clear();
+    }
+  }, {
     key: "loadImage",
     value: function loadImage(src) {
       var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _util__WEBPACK_IMPORTED_MODULE_1__["none"];

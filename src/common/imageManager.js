@@ -11,6 +11,10 @@ class ImageManager {
     return imgPool.get(src)
   }
 
+  clear() {
+    imgPool.clear();
+  }
+
   loadImage(src, callback = none) {
     let img     = null;
     const cache = this.getRes(src);
@@ -40,6 +44,7 @@ class ImageManager {
         img.loadDone   = true;
       }
 
+      /* istanbul ignore next */
       img.onerror = (e) => {
         console.log('img load error', e);
       }

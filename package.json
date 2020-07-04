@@ -7,8 +7,9 @@
     "dev": "webpack --config webpack.config.js --watch",
     "build": "webpack --config webpack.config.js --optimize-minimize",
     "lint": "eslint src",
-    "test": "./node_modules/.bin/mocha -r esm --require @babel/register -r jsdom-global/register --recursive test",
+    "test": "./node_modules/.bin/mocha -r esm --require @babel/register -r jsdom-global/register --recursive test --timeout 5000",
     "cover": "nyc --reporter=html --reporter=text-summary npm run test",
+    "test-report": "nyc npm test && nyc report --reporter=text-lcov",
     "coverage-report": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
     "docs:dev": "vuepress dev docsource/docs",
     "docs:build": "vuepress build  docsource/docs"
@@ -39,6 +40,7 @@
     "@babel/register": "^7.7.0",
     "babel-loader": "^8.0.6",
     "babel-polyfill": "^6.26.0",
+    "canvas": "^2.6.1",
     "css-layout": "^1.1.1",
     "esm": "^3.2.25",
     "fast-xml-parser": "^3.14.0",

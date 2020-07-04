@@ -69,7 +69,11 @@ export function createImage() {
   /* istanbul ignore if*/
   if ( typeof wx !== "undefined" ) {
     return wx.createImage();
+  } else if ( Image) {
+    // for nodejs test
+    return new Image();
   } else {
+    /* istanbul ignore if*/
     return document.createElement('img');
   }
 }
